@@ -1,18 +1,21 @@
-name: CI/CD Pipeline
+name: Development CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: 
+    - main
+    - release/*
   pull_request:
-    branches: [ main ]
+    branches: 
+    - main
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [16.x, 18.x]
         
     steps:
     - uses: actions/checkout@v3
@@ -22,45 +25,63 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+
+    - name: Install Dependencies
+      run: |
+        cd backend && npm install
+        cd ../frontend && npm install
         
-    - name: Install Backend Dependencies
-      working-directory: ./backend
-      run: npm ci || npm install
+    - name: Run Backend Tests
+      run: |
+        cd backend
+        npm test
+      env:
+        NODE_ENV: development
+        MONGODB_URL: ${{ secrets.MONGODB_URL }}
         
-    - name: Install Frontend Dependencies
-      working-directory: ./frontend
-      run: npm ci || npm install
+    - name: Run Frontend Tests
+      run: |
+        cd frontend
+        npm test
+      env:
+        NODE_ENV: development
+        REACT_APP_API_URL: ${{ secrets.RENDER_API_URL }}
         
-    - name: Build Frontend
+    - name: Run Linting
+      run: |
+        cd backend && npm run lint
+        cd ../frontend && npm run lint
+
+    - name: Build Frontend (Development)
+      if: github.ref == 'refs/heads/dev'
       working-directory: ./frontend
       run: npm run build
       env:
+        NODE_ENV: development
         REACT_APP_API_URL: ${{ secrets.RENDER_API_URL }}
-      
-    - name: Cache build artifacts
-      uses: actions/cache@v3
-      with:
-        path: |
-          frontend/build
-          frontend/node_modules
-          backend/node_modules
-        key: ${{ runner.os }}-build-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
 
-  deploy-frontend:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Deploy Frontend to Vercel
-      uses: amondnet/vercel-action@v20
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        working-directory: ./frontend
+    - name: Build Frontend (Staging)
+      if: github.ref == 'refs/heads/staging'
+      working-directory: ./frontend
+      run: npm run build
+      env:
+        NODE_ENV: staging
+        REACT_APP_API_URL: ${{ secrets.STAGING_RENDER_API_URL }}
+
+    - name: Deploy to Vercel (Development)
+      if: github.ref == 'refs/heads/dev'
+      run: |
+        npx vercel --token ${VERCEL_TOKEN} --confirm --no-clipboard
+      env:
+        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+
+    - name: Deploy to Vercel (Staging)
+      if: github.ref == 'refs/heads/staging'
+      run: |
+        npx vercel --token ${VERCEL_TOKEN} --confirm --no-clipboard --prod
+      env:
+        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
