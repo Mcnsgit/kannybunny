@@ -1,26 +1,23 @@
-import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Divider } from '@mui/material';
+import { Box, Drawer, List, ListItem, ListItemButton, Typography, Divider } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate , Link} from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import StarIcon from '@mui/icons-material/Star';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LogoutIcon from '@mui/icons-material/Logout';
-import React from 'react';
-import { Link, useParams } from 'react-router-dom';
-import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+// import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import boardApi from '../../api/boardApi';
 import { setBoards } from '../../redux/features/boardSlice';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import Funbunny from '../../assets/Funbunny.png';
+// import Funbunny from '../../assets/Funbunny.png';
 import assets from '../../assets/index';
 
 const Sidebar = () => {
-  const logo = Funbunny;
+  // const logo = Funbunny;
   const boards = useSelector((state) => state.board.value);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
   const { recentBoards } = useSelector((state) => state.favourites);
   const user = useSelector((state) => state.user.value);
 
@@ -90,7 +87,7 @@ const Sidebar = () => {
         {mainLinks.map((link) => (
           <ListItem key={link.text} disablePadding>
             <ListItemButton
-              selected={location.pathname === link.path}
+              selected={link.path === '/boards'}
               onClick={() => navigate(link.path)}
               sx={{
                 pl: '20px',
@@ -102,10 +99,10 @@ const Sidebar = () => {
                 }
               }}
             >
-              <ListItemIcon sx={{ color: assets.colors.primary }}>
+              <ListItem sx={{ color: assets.colors.primary }}>
                 {link.icon}
-              </ListItemIcon>
-              <ListItemText
+              </ListItem>
+              <ListItem
                 primary={link.text}
                 sx={{
                   color: assets.colors.primary
@@ -142,10 +139,10 @@ const Sidebar = () => {
                     }
                   }}
                 >
-                  <ListItemIcon sx={{ color: assets.colors.primary }}>
+                  <ListItem sx={{ color: assets.colors.primary }}>
                     <AccessTimeIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText
+                  </ListItem>
+                  <ListItem
                     primary={board.title}
                     sx={{
                       color: assets.colors.primary,
@@ -237,10 +234,10 @@ const Sidebar = () => {
               pl: '20px'
             }}
           >
-            <ListItemIcon sx={{ color: assets.colors.primary }}>
+            <ListItem sx={{ color: assets.colors.primary }}>
               <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText
+            </ListItem>
+            <ListItem
               primary='Logout'
               sx={{
                 color: assets.colors.primary

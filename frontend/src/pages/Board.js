@@ -5,7 +5,6 @@ import {
   Box,
   IconButton,
   TextField,
-  Typography,
   Button,
 } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';

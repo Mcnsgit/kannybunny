@@ -45,10 +45,6 @@ yarn-error.log*
 *.swp
 *.swo
 
-# Package files
-
-*.json
-
 # Optional npm cache directory
 .npm
 

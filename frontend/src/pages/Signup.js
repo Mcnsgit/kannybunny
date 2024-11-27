@@ -48,7 +48,7 @@ const Signup = () => {
         setLoading(true)
 
         try {
-            const res = await authApi.signup({ 
+            await authApi.signup({ 
                 username, password, confirmPassword 
             }) 
             setLoading(false)
@@ -138,8 +138,3 @@ const Signup = () => {
     )
 }    
 export default Signup
-
-    
-
-
-

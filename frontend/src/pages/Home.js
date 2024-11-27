@@ -7,7 +7,6 @@ import FunBunny from '../assets/Funbunny.png';
 import AddIcon from '@mui/icons-material/Add';
 import Loading from "../components/common/Loading";
 import { colors } from '../styles';
-import Sidebar from "../components/common/Sidebar";
 
 const Home = () => {
   const navigate = useNavigate();
