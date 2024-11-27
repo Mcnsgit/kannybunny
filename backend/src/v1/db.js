@@ -2,14 +2,14 @@
 const mongoose = require('mongoose');
 const { logger } = require('./utils/logger');
 require('dotenv').config();
-const Board = require('./models/Board'); // Adjust the import path as needed
-const List = require('./models/list'); // Adjust the import path as needed
-const Card = require('./models/card'); // Adjust the import path as needed
+
+// Initialize models object
+let models;
 
 const connectDB = async () => {
   try {
     if (!process.env.MONGODB_URL) {
-      throw new Error('MONGODB_URL is not defined in environment variables');
+      throw new Error('MONGODB_URL environment variable is not set');
     }
 
     const mongoURI = process.env.MONGODB_URL;
@@ -21,9 +21,18 @@ const connectDB = async () => {
     });
     
     logger.info('MongoDB Connected Successfully');
-    logger.info(`Connected to MongoDB instance at: ${mongoURI.split('@')[1]}`); // Only log the host part of the URL
+    logger.info(`Connected to MongoDB instance at: ${mongoURI.split('@')[1]}`);
+
+    // Load models
+    try {
+      models = require('./models');
+      logger.info('Models loaded successfully');
+    } catch (modelErr) {
+      logger.error('Error loading models:', modelErr);
+      throw modelErr;
+    }
   } catch (err) {
-    logger.error('MongoDB Connection Error:', err.message);
+    logger.error('MongoDB Connection Error:', err);
     process.exit(1);
   }
 };
@@ -55,19 +64,16 @@ process.on('SIGINT', async () => {
 
 const dbModule = {
   boardExists: async (boardId) => {
-    return Board.exists({ _id: boardId });
+    return models && models.Board.exists({ _id: boardId });
   },
+  
   listExists: async (listId) => {
-    return List.exists({ _id: listId });
+    return models && models.List.exists({ _id: listId });
   },
+  
   cardExists: async (cardId) => {
-    return Card.exists({ _id: cardId }, function (err, result) {
-      if (err) {
-        return false;
-      }
-      return result;
-    });
-  },
+    return models && models.Card.exists({ _id: cardId });
+  }
 };
 
 module.exports = { connectDB, dbModule };

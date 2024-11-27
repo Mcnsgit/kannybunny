@@ -1,7 +1,7 @@
 services:
   - type: web
     name: kannybunny-backend
-    env: node
+    runtime: node
     buildCommand: cd backend && npm install
     startCommand: cd backend && npm start
     envVars:

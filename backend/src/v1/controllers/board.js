@@ -1,6 +1,4 @@
-const Board = require('../models/Board');
-const List = require('../models/list');
-const Card = require('../models/card');
+const { Board, List, Card } = require('../models/index');
 
 //create board
 exports.create = async (req, res) => {
