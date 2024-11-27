@@ -46,7 +46,7 @@ yarn-error.log*
 *.swo
 
 # Package files
-frontend/package-lock.json
+
 *.json
 
 # Optional npm cache directory
