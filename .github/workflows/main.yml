@@ -2,9 +2,9 @@ name: Development CI/CD Pipeline
 
 on:
   push:
-    branches: [ dev, staging ]
+    branches: [ dev, staging, main ]
   pull_request:
-    branches: [ dev, staging ]
+    branches: [ dev, staging, main ]
 
 jobs:
   build-and-test:
@@ -12,7 +12,7 @@ jobs:
     
     strategy:
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [18.x]  # Stick to LTS version
         
     steps:
     - uses: actions/checkout@v3
@@ -23,23 +23,27 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    - name: Install Dependencies
+    - name: Install Backend Dependencies
+      working-directory: ./backend
       run: |
-        cd backend && npm install
-        cd ../frontend && npm install
+        npm ci || npm install
+        npm run build --if-present
+        
+    - name: Install Frontend Dependencies
+      working-directory: ./frontend
+      run: |
+        npm ci || npm install
         
     - name: Run Backend Tests
-      run: |
-        cd backend
-        npm test
+      working-directory: ./backend
+      run: npm test
       env:
         NODE_ENV: development
         MONGODB_URL: ${{ secrets.MONGODB_URL }}
         
     - name: Run Frontend Tests
-      run: |
-        cd frontend
-        npm test
+      working-directory: ./frontend
+      run: npm test
       env:
         NODE_ENV: development
         REACT_APP_API_URL: ${{ secrets.RENDER_API_URL }}
@@ -49,35 +53,16 @@ jobs:
         cd backend && npm run lint
         cd ../frontend && npm run lint
 
-    - name: Build Frontend (Development)
-      if: github.ref == 'refs/heads/dev'
+    - name: Build Frontend
       working-directory: ./frontend
       run: npm run build
       env:
-        NODE_ENV: development
-        REACT_APP_API_URL: ${{ secrets.RENDER_API_URL }}
+        NODE_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+        REACT_APP_API_URL: ${{ github.ref == 'refs/heads/main' && secrets.PROD_RENDER_API_URL || secrets.RENDER_API_URL }}
 
-    - name: Build Frontend (Staging)
-      if: github.ref == 'refs/heads/staging'
-      working-directory: ./frontend
-      run: npm run build
-      env:
-        NODE_ENV: staging
-        REACT_APP_API_URL: ${{ secrets.STAGING_RENDER_API_URL }}
-
-    - name: Deploy to Vercel (Development)
-      if: github.ref == 'refs/heads/dev'
+    - name: Deploy to Vercel
       run: |
-        npx vercel --token ${VERCEL_TOKEN} --confirm --no-clipboard
-      env:
-        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-
-    - name: Deploy to Vercel (Staging)
-      if: github.ref == 'refs/heads/staging'
-      run: |
-        npx vercel --token ${VERCEL_TOKEN} --confirm --no-clipboard --prod
+        npx vercel --token ${VERCEL_TOKEN} --confirm --no-clipboard ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
       env:
         VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
