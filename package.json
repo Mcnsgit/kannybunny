@@ -1,5 +1,6 @@
 {
   "devDependencies": {
-    "@types/react-beautiful-dnd": "^13.1.8"
+    "@types/react-beautiful-dnd": "^13.1.8",
+    "vercel": "^39.1.2"
   }
 }

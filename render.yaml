@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: kannybunny-backend
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8080
+      - key: MONGODB_URL
+        sync: false
+      - key: TOKEN_SECRET_KEY
+        sync: false
+      - key: PASSWORD_SECRET_KEY
+        sync: false

@@ -80,10 +80,12 @@ jobs:
         NODE_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
         REACT_APP_API_URL: ${{ github.ref == 'refs/heads/main' && secrets.PROD_RENDER_API_URL || secrets.RENDER_API_URL }}
 
-    - name: Deploy to Vercel
-      run: |
-        npx vercel --token ${VERCEL_TOKEN} --confirm --no-clipboard ${{ github.ref == 'refs/heads/main' && '--prod' || '' }}
+    - name: Build Backend
+      working-directory: ./backend
+      run: npm run build
       env:
-        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        NODE_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+        MONGODB_URL: ${{ secrets.MONGODB_URL }}
+        REACT_APP_API_URL: ${{ github.ref == 'refs/heads/main' && secrets.PROD_RENDER_API_URL || secrets.RENDER_API_URL }}
+
+        
