@@ -1,35 +1,34 @@
-import axios from 'axios'
-import queryString from 'query-string'
+import axios from 'axios';
+import queryString from 'query-string';
+
+const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001/api/v1';
 
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:3001/api/v1/',
-  headers: {
-      'Content-Type': 'application/json', 
-  },
-  paramsSerializer: params => queryString.stringify(params),
+  baseURL: baseUrl,
+  paramsSerializer: params => queryString.stringify(params)
 });
 
-axiosClient.interceptors.request.use(async config => {
+axiosClient.interceptors.request.use(async (config) => {
   return {
     ...config,
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
-  }
-})
+  };
+});
 
 axiosClient.interceptors.response.use(
-  response => {
+  (response) => {
     if (response && response.data) return response.data;
     return response;
   },
-  error => {
-    if (!error.response) {
-      return alert(error)
+  (err) => {
+    if (!err.response) {
+      return alert(err);
     }
-    throw error;
+    throw err.response;
   }
 );
 
-
-export default axiosClient
+export default axiosClient;
