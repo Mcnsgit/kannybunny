@@ -46,7 +46,6 @@ yarn-error.log*
 *.swo
 
 # Package files
-package-lock.json
 frontend/package-lock.json
 *.json
 
