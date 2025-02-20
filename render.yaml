@@ -2,7 +2,7 @@ services:
   - type: web
     name: kannybunny-backend
     runtime: node
-    buildCommand: cd backend && npm install
+    buildCommand: cd backend && npm run build
     startCommand: cd backend && npm start
     envVars:
       - key: NODE_ENV
@@ -14,4 +14,15 @@ services:
       - key: TOKEN_SECRET_KEY
         sync: false
       - key: PASSWORD_SECRET_KEY
+        sync: false
+
+  - type: web
+    name: kannybunny-frontend
+    runtime: node
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npx serve -s build
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REACT_APP_API_URL
         sync: false
