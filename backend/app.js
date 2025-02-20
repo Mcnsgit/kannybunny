@@ -19,7 +19,8 @@ connectDB().catch(err => {
 const allowedOrigins = [
   'http://localhost:3000',
   'https://kannybunny.onrender.com',
-  'http://kannybunny.vercel.app'
+  'http://kannybunny.vercel.app',
+  process.env.FRONTEND_URL,
 ]
 
 // Middleware

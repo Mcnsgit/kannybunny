@@ -78,7 +78,7 @@ jobs:
       env:
         CI: false
         NODE_ENV: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
-        REACT_APP_API_URL: ${{ github.ref == 'refs/heads/main' && secrets.PROD_RENDER_API_URL || secrets.RENDER_API_URL }}
+        REACT_APP_API_URL: ${{ github.ref == 'refs/heads/main' && secrets.REACT_APP_PROD_API_URL || secrets.RENDER_API_URL }}
 
     - name: Build Backend
       working-directory: ./backend
