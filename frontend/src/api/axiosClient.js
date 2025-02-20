@@ -1,34 +1,30 @@
 import axios from 'axios';
 import queryString from 'query-string';
 
-const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001/api/v1';
+const BASE_URL = process.env.REACT_APP_API_URL || 'https://kannybunny.onrender.com/api/v1';
+
+
 
 const axiosClient = axios.create({
-  baseURL: baseUrl,
-  paramsSerializer: params => queryString.stringify(params)
-});
-
-axiosClient.interceptors.request.use(async (config) => {
-  return {
-    ...config,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
-  };
-});
-
-axiosClient.interceptors.response.use(
-  (response) => {
-    if (response && response.data) return response.data;
-    return response;
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
   },
-  (err) => {
-    if (!err.response) {
-      return alert(err);
+});
+
+axiosClient.nterceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    throw err.response;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
 );
+
+
 
 export default axiosClient;

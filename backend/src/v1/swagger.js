@@ -10,8 +10,8 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3001/api/v1',
-        description: 'Development server',
+        url: 'http://localhost:3001/api/v1'|| 'https://kannybunny.onrender.com',
+
       },
     ],
     components: {
