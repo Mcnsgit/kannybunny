@@ -1,16 +1,21 @@
 import axios from 'axios';
-import queryString from 'query-string';
-
-const BASE_URL = process.env.REACT_APP_API_URL || 'https://kannybunny.onrender.com/api/v1';
 
 
+
+const getBaseUrl = () => {
+  if (process.env.NODE_ENV === 'development') {
+    return process.env.REACT_APP_LOCAL_API_URL || 'http://localhost:3001/api/v1';
+  }
+  return process.env.REACT_APP_PROD_API_URL || 'https://kannybunny.onrender.com/api/v1';
+};
 
 const axiosClient = axios.create({
-  baseURL: BASE_URL,
+  baseURL: getBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
 
 axiosClient.nterceptors.request.use(
   (config) => {
